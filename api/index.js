@@ -14,6 +14,7 @@ const port = 8000;
 
 const users = require('./app/users');
 const User = require("./models/User");
+const Message = require("./models/Message");
 
 app.use('/users', users);
 
@@ -39,9 +40,12 @@ app.ws('/messages', async(ws, req) => {
   console.log('Client connected id = ', user._id);
   onlineConnections[user._id] = ws;
 
+  const messages = await Message.find();
+
   ws.send(JSON.stringify({
     type: 'CONNECTED',
-    user
+    user,
+    messages
   }));
 
   ws.on('close', () => {
@@ -49,8 +53,9 @@ app.ws('/messages', async(ws, req) => {
     delete onlineConnections[user._id]
   });
 
-  ws.on('message', msg => {
+  ws.on('message', async msg => {
     const newMessage = JSON.parse(msg);
+    console.log(newMessage)
 
     switch(newMessage.type) {
       case 'POST_MESSAGE':
@@ -65,6 +70,16 @@ app.ws('/messages', async(ws, req) => {
             }
           })))
         });
+
+        const messageData = {
+          text: newMessage.message.text,
+          user: newMessage.message.user,
+          datetime: new Date().toISOString(),
+          recipient: newMessage.message.recipient
+        }
+
+        const message = new Message(messageData);
+        await message.save();
         break;
       default:
         console.log('Unknown message type: ', newMessage.type)
