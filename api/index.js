@@ -65,7 +65,7 @@ app.ws('/messages', async(ws, req) => {
           connect.send(JSON.stringify(({
             type: 'NEW_MESSAGE',
             message: {
-              user,
+              user: user._id,
               text: newMessage.message
             }
           })))
