@@ -2,7 +2,6 @@ import React from 'react';
 import {AppBar, Grid, Toolbar, Typography} from "@mui/material";
 import {Link} from "react-router-dom";
 import {makeStyles} from "tss-react/mui";
-import {useSelector} from "react-redux";
 import User from "./Menu/User";
 import Anonymous from "./Menu/Anonymous";
 import {ToastContainer} from "react-toastify";

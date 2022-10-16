@@ -16,7 +16,7 @@ const initialState = {
     logoutError: null
 };
 
-const usersReducer = (state, initialState, action) => {
+const usersReducer = (state = initialState, action) => {
     switch (action.type) {
         //REGISTER
 

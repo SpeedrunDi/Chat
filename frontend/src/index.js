@@ -2,10 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {Router} from 'react-router-dom';
 import {Provider} from "react-redux";
-import {applyMiddleware, combineReducers, createStore} from "redux";
+import {applyMiddleware, combineReducers, compose, createStore} from "redux";
 import thunk from "redux-thunk";
+import {ThemeProvider} from "@mui/material";
 
 import history from './history'
+import theme from "./theme";
 import usersReducer from "./store/reducers/usersReducer";
 import App from './App';
 
@@ -52,11 +54,13 @@ store.subscribe(() => {
 });
 
 const app = (
-  <Provider store={store}>
-    <Router history={history}>
-      <App/>
-    </Router>
-  </Provider>
+    <Provider store={store}>
+        <ThemeProvider theme={theme}>
+            <Router history={history}>
+                <App/>
+            </Router>
+        </ThemeProvider>
+    </Provider>
 );
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
