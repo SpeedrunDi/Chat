@@ -50,7 +50,7 @@ UserSchema.set('toJSON', {
     }
 });
 
-UserSchema.methods.chechPassword = function (password) {
+UserSchema.methods.checkPassword = function (password) {
     return bcrypt.compare(password, this.password);
 }
 
