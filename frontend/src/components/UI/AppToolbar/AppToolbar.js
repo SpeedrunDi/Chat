@@ -2,10 +2,10 @@ import React from 'react';
 import {AppBar, Grid, Toolbar, Typography} from "@mui/material";
 import {Link} from "react-router-dom";
 import {makeStyles} from "tss-react/mui";
-import User from "./Menu/User";
-import Anonymous from "./Menu/Anonymous";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import UserMenu from "./Menu/UserMenu";
+import Anonymous from "./Menu/Anonymous";
 
 
 const useStyles = makeStyles()(theme => ({
@@ -40,7 +40,7 @@ const AppToolbar = () => {
             </Grid>
 
             <Grid item>
-              {user ? <User user={user}/> : <Anonymous/>}
+              {user ? <UserMenu user={user}/> : <Anonymous/>}
             </Grid>
           </Grid>
         </Toolbar>
