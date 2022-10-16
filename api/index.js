@@ -37,7 +37,7 @@ app.ws('/messages', async(ws, req) => {
     }));
   }
 
-  console.log('Client connected id = ', user._id);
+  // console.log('Client connected id = ', user._id);
   onlineConnections[user._id] = ws;
 
   const messages = await Message.find();
@@ -49,7 +49,7 @@ app.ws('/messages', async(ws, req) => {
   }));
 
   ws.on('close', () => {
-    console.log('Client disconnected id = ', user._id);
+    // console.log('Client disconnected id = ', user._id);
     delete onlineConnections[user._id]
   });
 
