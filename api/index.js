@@ -37,20 +37,26 @@ app.ws('/messages', async(ws, req) => {
     }));
   }
 
-  // console.log('Client connected id = ', user._id);
-  onlineConnections[user._id] = ws;
+  const connectedUser = JSON.stringify({
+    username: user.username,
+    id: user._id
+  })
+
+  console.log('Client connected ', connectedUser);
+  onlineConnections[connectedUser] = ws;
 
   const messages = await Message.find();
 
   ws.send(JSON.stringify({
     type: 'CONNECTED',
     user,
-    messages
+    messages,
+    onlineConnections
   }));
 
   ws.on('close', () => {
-    // console.log('Client disconnected id = ', user._id);
-    delete onlineConnections[user._id]
+    console.log('Client disconnected id = ', connectedUser);
+    delete onlineConnections[connectedUser]
   });
 
   ws.on('message', async msg => {

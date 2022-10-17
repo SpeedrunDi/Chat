@@ -6,6 +6,7 @@ import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import UserMenu from "./Menu/UserMenu";
 import Anonymous from "./Menu/Anonymous";
+import {useSelector} from "react-redux";
 
 
 const useStyles = makeStyles()(theme => ({
@@ -23,7 +24,7 @@ const useStyles = makeStyles()(theme => ({
 
 const AppToolbar = () => {
   const { classes } = useStyles();
-  const user = null;
+  const user = useSelector(state => state.users.user);
 
   return (
     <>
