@@ -11,19 +11,21 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    console.log(user)
-    ws.current = new WebSocket('ws://localhost:8000/messages?token=' + user.token);
+    if (user) {
+      console.log(user)
+      ws.current = new WebSocket('ws://localhost:8000/messages?token=' + user.token);
 
-    ws.current.onmessage = event => {
-      const newMessage = JSON.parse(event.data);
-      console.log(newMessage);
+      ws.current.onmessage = event => {
+        const newMessage = JSON.parse(event.data);
+        console.log(newMessage);
 
-      if(newMessage.type === 'CONNECTED') {
-        setOnlineUsers(Object.keys(newMessage.onlineConnections).map(el => JSON.parse(el)));
-        setMessages(newMessage.messages);
+        if(newMessage.type === 'CONNECTED') {
+          setOnlineUsers(Object.keys(newMessage.onlineConnections).map(el => JSON.parse(el)));
+          setMessages(newMessage.messages);
+        }
       }
     }
-  }, [])
+  }, [user]);
 
   return (
     <Grid container spacing={4}>

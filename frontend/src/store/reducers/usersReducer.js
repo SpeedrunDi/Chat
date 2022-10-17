@@ -1,4 +1,8 @@
 import {
+    REGISTER_USER_REQUEST,
+    REGISTER_USER_SUCCESS,
+    REGISTER_USER_FAILURE,
+    CLEAR_REGISTER_ERRORS,
     CLEAR_LOGIN_ERRORS,
     LOGIN_USER_SUCCESS,
     LOGOUT_USER_FAILURE,
@@ -10,6 +14,8 @@ import {
 
 const initialState = {
     user: null,
+    registerLoading: false,
+    registerError: null,
     loginLoading: false,
     loginError: null,
     logoutLoading: false,
@@ -18,7 +24,14 @@ const initialState = {
 
 const usersReducer = (state = initialState, action) => {
     switch (action.type) {
-        //REGISTER
+        case REGISTER_USER_REQUEST:
+            return {...state, registerLoading: true};
+        case REGISTER_USER_SUCCESS:
+            return {...state, registerLoading: false, user: action.payload};
+        case REGISTER_USER_FAILURE:
+            return {...state, registerLoading: false, registerError: action.payload};
+        case CLEAR_REGISTER_ERRORS:
+            return {...state, registerError: null};
 
         case LOGIN_USER_REQUEST:
             return {...state, loginLoading: true};
