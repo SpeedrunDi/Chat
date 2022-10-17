@@ -38,15 +38,7 @@ export const registerUser = userData => {
             const response = await axiosApi.post('/users', userData);
 
             dispatch(registerUserSuccess(response.data));
-            toast.success('You have successfully registered!', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
+            toast.success('You have successfully registered!');
         } catch (e) {
             if (e.response && e.response.data) {
                 dispatch(registerUserFailure(e.response.data));

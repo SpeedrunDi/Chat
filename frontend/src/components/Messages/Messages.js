@@ -20,11 +20,14 @@ const Messages = ({messages}) => {
             <Box sx={{display: 'flex', flexDirection: 'column',alignItems:'flex-start', background: 'lightgrey', padding: '7px', borderRadius: '15px'}}>
               {messages && messages.map(message =>
               {
-                if(user.username === message.user.username) {
+                if(user && user.username === message.user.username) {
                   messageStyle = 'flex-end'
                 } else {messageStyle = 'flex-start'}
                 return (
-                  <Card sx={{border: '1px solid grey', marginTop: '10px', padding: '5px', alignSelf: messageStyle}} >
+                  <Card
+                    key={message._id}
+                    sx={{border: '1px solid grey', marginTop: '10px', padding: '5px', alignSelf: messageStyle}}
+                  >
                     <strong>{message.user.username}</strong>: {message.text}
                   </Card>
                 )
