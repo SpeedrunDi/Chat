@@ -2,7 +2,7 @@ import React from 'react';
 import {Box, Button, Card, Grid, TextField, Typography} from "@mui/material";
 import {useSelector} from "react-redux";
 
-const Messages = ({messages}) => {
+const Messages = ({messages, reconnect}) => {
   console.log(messages)
   const user = useSelector(state => state.users.user);
 
@@ -16,6 +16,7 @@ const Messages = ({messages}) => {
           <Card elevation={12}  sx={{marginBottom: '25px', padding: '10px'}}>
             <Typography variant='h5'>
               Chat room
+              {reconnect && <Typography variant="span" marginLeft="30px" fontSize="12px">connection...</Typography>}
             </Typography>
             <Box sx={{display: 'flex', flexDirection: 'column',alignItems:'flex-start', background: 'lightgrey', padding: '7px', borderRadius: '15px'}}>
               {messages && messages.map(message =>

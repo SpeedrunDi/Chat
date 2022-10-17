@@ -10,20 +10,35 @@ const Chat = () => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [messages, setMessages] = useState([]);
 
+  const [reconnect, setReconnect] = useState(false);
+
   useEffect(() => {
     if (user) {
-      console.log(user)
-      ws.current = new WebSocket('ws://localhost:8000/messages?token=' + user.token);
+      const connect = () => {
+        ws.current = new WebSocket('ws://localhost:8000/messages?token=' + user.token);
 
-      ws.current.onmessage = event => {
-        const newMessage = JSON.parse(event.data);
-        console.log(newMessage);
+        ws.current.onmessage = event => {
+          const newMessage = JSON.parse(event.data);
+          console.log(newMessage);
 
-        if(newMessage.type === 'CONNECTED') {
-          setOnlineUsers(Object.keys(newMessage.onlineConnections).map(el => JSON.parse(el)));
-          setMessages(newMessage.messages);
-        }
-      }
+          if(newMessage.type === 'CONNECTED') {
+            setOnlineUsers(Object.keys(newMessage.onlineConnections).map(el => JSON.parse(el)));
+            setMessages(newMessage.messages);
+          }
+        };
+
+        ws.current.onclose = () => {
+          console.log('disconnected');
+          setReconnect(true);
+
+          setTimeout(() => {
+            connect();
+            setReconnect(false);
+          }, 3000);
+        };
+      };
+
+      connect();
     }
   }, [user]);
 
@@ -35,6 +50,7 @@ const Chat = () => {
         />
       </Grid>
       <Messages
+        reconnect={reconnect}
         messages={messages}
       />
     </Grid>
