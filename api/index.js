@@ -45,7 +45,7 @@ app.ws('/messages', async(ws, req) => {
   console.log('Client connected ', connectedUser);
   onlineConnections[connectedUser] = ws;
 
-  const messages = await Message.find();
+  const messages = await Message.find().populate('user', 'username');
 
   ws.send(JSON.stringify({
     type: 'CONNECTED',

@@ -8,6 +8,7 @@ const Chat = () => {
   const ws = useRef(null);
   const user = useSelector(state => state.users.user);
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     console.log(user)
@@ -15,10 +16,11 @@ const Chat = () => {
 
     ws.current.onmessage = event => {
       const newMessage = JSON.parse(event.data);
-      console.log(Object.keys(newMessage.onlineConnections));
+      console.log(newMessage);
 
       if(newMessage.type === 'CONNECTED') {
-        setOnlineUsers(Object.keys(newMessage.onlineConnections).map(el => JSON.parse(el)))
+        setOnlineUsers(Object.keys(newMessage.onlineConnections).map(el => JSON.parse(el)));
+        setMessages(newMessage.messages);
       }
     }
   }, [])
@@ -30,7 +32,9 @@ const Chat = () => {
           onlineUsers={onlineUsers}
         />
       </Grid>
-      <Messages/>
+      <Messages
+        messages={messages}
+      />
     </Grid>
   );
 };
