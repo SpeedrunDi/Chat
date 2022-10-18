@@ -29,6 +29,10 @@ const Chat = ({history}) => {
             setOnlineUsers(Object.keys(newMessage.onlineConnections).map(el => JSON.parse(el)));
             setMessages(newMessage.messages);
           }
+
+          if(newMessage.type === 'UPDATE_MESSAGES') {
+            setMessages(newMessage.messages);
+          }
         };
 
         ws.current.onclose = () => {
@@ -46,6 +50,14 @@ const Chat = ({history}) => {
     }
   }, [user]);
 
+  const deleteMessage = id => {
+    ws.current.send(JSON.stringify({
+      type: 'DELETE_MESSAGE',
+      messageId: id
+    }));
+
+  };
+
   return (
     <Grid container spacing={4}>
       <Grid item xs={4}>
@@ -55,6 +67,8 @@ const Chat = ({history}) => {
       </Grid>
       <Messages
         messages={messages}
+        reconnect={reconnect}
+        deleteMessage={deleteMessage}
       />
     </Grid>
   );

@@ -1,9 +1,11 @@
 import React from 'react';
 import {Box, Button, Card, Grid, TextField, Typography} from "@mui/material";
+import SendIcon from '@mui/icons-material/Send';
 import {useSelector} from "react-redux";
 
-const Messages = ({messages, reconnect}) => {
-  console.log(messages)
+
+
+const Messages = ({messages, reconnect, deleteMessage}) => {
   const user = useSelector(state => state.users.user);
 
   let messageStyle = 'flex-start';
@@ -25,12 +27,18 @@ const Messages = ({messages, reconnect}) => {
                   messageStyle = 'flex-end'
                 } else {messageStyle = 'flex-start'}
                 return (
-                  <Card
-                    key={message._id}
-                    sx={{border: '1px solid grey', marginTop: '10px', padding: '5px', alignSelf: messageStyle}}
-                  >
-                    <strong>{message.user.username}</strong>: {message.text}
-                  </Card>
+                    <Card
+                      key={message._id}
+                      sx={{border: '1px solid grey', marginTop: '10px', padding: '7px 25px 7px 7px', alignSelf: messageStyle, position: 'relative'}}
+                    >
+                      <strong>{message.user.username}</strong>: {message.text}
+                      {user && user.role === 'admin'
+                        ? <Button onClick={() => deleteMessage(message._id)} aria-label="delete" size='small' sx={{position: 'absolute', top: '-8px', right: '-26px'}}>
+                            X
+                          </Button>
+                        : null
+                      }
+                    </Card>
                 )
               }
               )}
@@ -40,7 +48,7 @@ const Messages = ({messages, reconnect}) => {
         <Grid item xs={2}>
           <Card elevation={12} sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
             <TextField label='Enter message' variant='outlined' sx={{width: '80%'}} size='small'/>
-            <Button variant="contained">
+            <Button variant="contained"  endIcon={<SendIcon/>}>
               Send
             </Button>
           </Card>

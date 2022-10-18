@@ -87,6 +87,21 @@ app.ws('/messages', async(ws, req) => {
         const message = new Message(messageData);
         await message.save();
         break;
+
+      case 'DELETE_MESSAGE':
+        await Message.findByIdAndDelete(newMessage.messageId);
+        const updatedMessages = await Message.find().sort({datetime: -1}).limit(30).populate('user', 'username');
+        const messages = updatedMessages.reverse();
+        Object.keys(onlineConnections).forEach(connectId => {
+          const connect = onlineConnections[connectId];
+
+          connect.send(JSON.stringify({
+            type: 'UPDATE_MESSAGES',
+            messages
+          }))
+        })
+        break;
+
       default:
         console.log('Unknown message type: ', newMessage.type)
     }
