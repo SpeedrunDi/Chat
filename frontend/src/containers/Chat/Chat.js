@@ -4,15 +4,18 @@ import Users from "../../components/Users/Users";
 import Messages from "../../components/Messages/Messages";
 import {useSelector} from "react-redux";
 
-const Chat = () => {
+const Chat = ({history}) => {
   const ws = useRef(null);
   const user = useSelector(state => state.users.user);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [messages, setMessages] = useState([]);
 
+  if(user === null) {
+    history.push('/login');
+  }
+
   useEffect(() => {
     if (user) {
-      console.log(user)
       ws.current = new WebSocket('ws://localhost:8000/messages?token=' + user.token);
 
       ws.current.onmessage = event => {

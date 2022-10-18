@@ -24,7 +24,7 @@ app.ws('/messages', async(ws, req) => {
   const token = req.query.token;
 
   if(!token) {
-    ws.send(JSON.stringify({
+    return ws.send(JSON.stringify({
     error: 'Wrong token'
     }))
   }
@@ -32,7 +32,7 @@ app.ws('/messages', async(ws, req) => {
   const user = await User.findOne({token: token});
 
   if(!user) {
-    ws.send(JSON.stringify({
+    return ws.send(JSON.stringify({
       error: 'User not found'
     }));
   }
