@@ -45,8 +45,8 @@ app.ws('/messages', async(ws, req) => {
   console.log('Client connected ', connectedUser);
   onlineConnections[connectedUser] = ws;
 
-  const messages = await Message.find().populate('user', 'username');
-
+  const lastMessages = await Message.find().sort({datetime: -1}).limit(30).populate('user', 'username');
+  const messages = lastMessages.reverse();
   ws.send(JSON.stringify({
     type: 'CONNECTED',
     user,
