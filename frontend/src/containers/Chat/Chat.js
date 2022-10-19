@@ -61,14 +61,15 @@ const Chat = ({history}) => {
 
   };
 
-  const sendMessage = text => {
+  const sendMessage = (text, userId) => {
     ws.current.send(JSON.stringify({
       type: 'CREATE_MESSAGE',
       message: {
-        text: text
+        text: text,
+        recipient: userId
       }
     }));
-  }
+  };
 
   return (
     <Grid container spacing={4}>
