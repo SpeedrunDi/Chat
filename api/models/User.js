@@ -4,22 +4,33 @@ const {nanoid} = require('nanoid');
 const Schema = mongoose.Schema;
 const SALT_WORK_FACTOR = 10;
 
+const validateUnique = async value => {
+  const user = await User.findOne({email: value});
+
+  if (!user) return false;
+};
+
+const validatePassword = value => {
+  const pattern = /[\w]{6,30}/;
+
+  if (!pattern.test(value)) return false;
+};
+
 const UserSchema = new Schema({
     username: {
         type: String,
         required: true,
         unique: true,
-        validate: {
-            validator: async value => {
-                const user = await User.findOne({username: value});
-                if (user) return false;
-            },
-            message: 'This user is already registered!',
-        }
+        validate: [
+            {validator: validateUnique, message: 'This user is already registered'}
+        ]
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        validate: [
+            {validator: validatePassword, message: 'Your password is invalid'}
+        ]
     },
     token: {
         type: String,
