@@ -23,7 +23,6 @@ const Chat = ({history}) => {
 
         ws.current.onmessage = event => {
           const newMessage = JSON.parse(event.data);
-          console.log(newMessage);
 
           if(newMessage.type === 'CONNECTED') {
             setOnlineUsers(Object.keys(newMessage.onlineConnections).map(el => JSON.parse(el)));

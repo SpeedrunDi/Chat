@@ -1,15 +1,29 @@
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Box, Button, Card, Grid, TextField, Typography} from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 import {useSelector} from "react-redux";
 
-
-
 const Messages = ({messages, reconnect, deleteMessage}) => {
+  const ws = useRef(null);
+  const [messageText, setMessageText] = useState('');
   const user = useSelector(state => state.users.user);
 
-  let messageStyle = 'flex-start';
+  useEffect(() => {
+    ws.current = new WebSocket('ws://localhost:8000/messages');
 
+    ws.current.onmessage = event => {
+      console.log(event);
+    };
+  }, []);
+
+  const sendMessage = () => {
+    ws.current.send(JSON.stringify({
+      type: 'CREATE_MESSAGE',
+      text: messageText,
+    }));
+  };
+
+  let messageStyle = 'flex-start';
 
   return (
     <Grid  item xs={8}>
@@ -47,8 +61,16 @@ const Messages = ({messages, reconnect, deleteMessage}) => {
         </Grid>
         <Grid item xs={2}>
           <Card elevation={12} sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-            <TextField label='Enter message' variant='outlined' sx={{width: '80%'}} size='small'/>
-            <Button variant="contained"  endIcon={<SendIcon/>}>
+            <TextField
+                label='Enter message'
+                variant='outlined'
+                sx={{width: '80%'}}
+                size='small'
+                value={messageText}
+                name='message'
+                onChange={e => setMessageText(e.target.value)}
+            />
+            <Button variant="contained"  endIcon={<SendIcon/>} onClick={sendMessage}>
               Send
             </Button>
           </Card>

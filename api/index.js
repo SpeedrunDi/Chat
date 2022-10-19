@@ -39,7 +39,8 @@ app.ws('/messages', async(ws, req) => {
 
   const connectedUser = JSON.stringify({
     username: user.username,
-    id: user._id
+    id: user._id,
+    token
   })
 
   console.log('Client connected ', connectedUser);
@@ -61,10 +62,9 @@ app.ws('/messages', async(ws, req) => {
 
   ws.on('message', async msg => {
     const newMessage = JSON.parse(msg);
-    console.log(newMessage)
 
     switch(newMessage.type) {
-      case 'POST_MESSAGE':
+      case 'CREATE_MESSAGE':
         Object.keys(onlineConnections).forEach(connectId => {
           const connect = onlineConnections[connectId];
 

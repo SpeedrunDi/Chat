@@ -2,7 +2,6 @@ import React from 'react';
 import {Box, Card, Typography} from "@mui/material";
 
 const Users = ({onlineUsers}) => {
-  console.log(onlineUsers)
   return (
     <Card elevation={12} sx={{padding: '10px'}}>
       <Typography variant='h5'>
