@@ -1,27 +1,12 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {Box, Button, Card, Grid, TextField, Typography} from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 import {useSelector} from "react-redux";
 
-const Messages = ({messages, reconnect, deleteMessage}) => {
-  const ws = useRef(null);
+const Messages = ({messages, reconnect, deleteMessage, sendMessage}) => {
   const [messageText, setMessageText] = useState('');
   const user = useSelector(state => state.users.user);
 
-  useEffect(() => {
-    ws.current = new WebSocket('ws://localhost:8000/messages');
-
-    ws.current.onmessage = event => {
-      console.log(event);
-    };
-  }, []);
-
-  const sendMessage = () => {
-    ws.current.send(JSON.stringify({
-      type: 'CREATE_MESSAGE',
-      text: messageText,
-    }));
-  };
 
   let messageStyle = 'flex-start';
 
@@ -70,7 +55,7 @@ const Messages = ({messages, reconnect, deleteMessage}) => {
                 name='message'
                 onChange={e => setMessageText(e.target.value)}
             />
-            <Button variant="contained"  endIcon={<SendIcon/>} onClick={sendMessage}>
+            <Button variant="contained"  endIcon={<SendIcon/>} onClick={() => [sendMessage(messageText), setMessageText('')]}>
               Send
             </Button>
           </Card>

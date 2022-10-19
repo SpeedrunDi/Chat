@@ -18,7 +18,7 @@ const useStyles = makeStyles()(theme => ({
     }
   },
   staticToolbar: {
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
   },
 }))
 

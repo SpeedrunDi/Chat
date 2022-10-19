@@ -57,35 +57,33 @@ app.ws('/messages', async(ws, req) => {
 
   ws.on('close', () => {
     console.log('Client disconnected id = ', connectedUser);
-    delete onlineConnections[connectedUser]
+    delete onlineConnections[connectedUser];
   });
 
   ws.on('message', async msg => {
     const newMessage = JSON.parse(msg);
+    console.log(newMessage)
 
     switch(newMessage.type) {
       case 'CREATE_MESSAGE':
-        Object.keys(onlineConnections).forEach(connectId => {
-          const connect = onlineConnections[connectId];
-
-          connect.send(JSON.stringify(({
-            type: 'NEW_MESSAGE',
-            message: {
-              user: user._id,
-              text: newMessage.message
-            }
-          })))
-        });
-
         const messageData = {
           text: newMessage.message.text,
-          user: newMessage.message.user,
+          user,
           datetime: new Date().toISOString(),
           recipient: newMessage.message.recipient
-        }
+        };
 
         const message = new Message(messageData);
         await message.save();
+
+        Object.keys(onlineConnections).forEach(connectId => {
+          const connect = onlineConnections[connectId];
+          connect.send(JSON.stringify(({
+            type: 'NEW_MESSAGE',
+            message: messageData
+          })));
+        });
+
         break;
 
       case 'DELETE_MESSAGE':

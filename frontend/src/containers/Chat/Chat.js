@@ -32,6 +32,10 @@ const Chat = ({history}) => {
           if(newMessage.type === 'UPDATE_MESSAGES') {
             setMessages(newMessage.messages);
           }
+
+          if(newMessage.type === 'NEW_MESSAGE') {
+            setMessages(prev => [...prev, newMessage.message]);
+          }
         };
 
         ws.current.onclose = () => {
@@ -57,6 +61,15 @@ const Chat = ({history}) => {
 
   };
 
+  const sendMessage = text => {
+    ws.current.send(JSON.stringify({
+      type: 'CREATE_MESSAGE',
+      message: {
+        text: text
+      }
+    }));
+  }
+
   return (
     <Grid container spacing={4}>
       <Grid item xs={4}>
@@ -68,6 +81,7 @@ const Chat = ({history}) => {
         messages={messages}
         reconnect={reconnect}
         deleteMessage={deleteMessage}
+        sendMessage={sendMessage}
       />
     </Grid>
   );
