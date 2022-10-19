@@ -1,6 +1,33 @@
 const express = require('express');
 const User = require('../models/User');
+
 const router = express.Router();
+
+router.get('/', async (req, res) => {
+    const token = req.get('Authorization');
+
+    if (!token) {
+        return res.status(401).send({message: 'No token present!'});
+    }
+
+    try {
+        const user = await User.findOne({token});
+
+        if (!user) {
+            return res.status(401).send({message: 'Wrong token!'});
+        }
+
+        const users = await User.find({username: {$ne: user.username}});
+
+        if (!users) {
+            return res.status(404).send({message: 'Users not found!'});
+        }
+
+        res.send(users);
+    } catch (e) {
+        res.status(400).send(e);
+    }
+});
 
 router.post('/', async (req, res) => {
     try{
