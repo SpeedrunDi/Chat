@@ -46,7 +46,11 @@ app.ws('/messages', async(ws, req) => {
   console.log('Client connected ', connectedUser);
   onlineConnections[connectedUser] = ws;
 
-  const lastMessages = await Message.find().sort({datetime: -1}).limit(30).populate('user', 'username');
+  const lastMessages = await Message
+    .find({$or: [{recipient: {$in: [null, user._id]}}, {user: user._id}]})
+    .sort({datetime: -1}).limit(30)
+    .populate('user', 'username');
+
   const messages = lastMessages.reverse();
   ws.send(JSON.stringify({
     type: 'CONNECTED',
@@ -62,33 +66,52 @@ app.ws('/messages', async(ws, req) => {
 
   ws.on('message', async msg => {
     const newMessage = JSON.parse(msg);
-    console.log(newMessage)
 
     switch(newMessage.type) {
       case 'CREATE_MESSAGE':
         const messageData = {
           text: newMessage.message.text,
-          user,
-          datetime: new Date().toISOString(),
-          recipient: newMessage.message.recipient
+          user: user,
+          datetime: new Date().toISOString()
         };
+
+        if (newMessage.message.recipient) {
+          messageData.recipient = newMessage.message.recipient;
+        }
 
         const message = new Message(messageData);
         await message.save();
 
         Object.keys(onlineConnections).forEach(connectId => {
           const connect = onlineConnections[connectId];
-          connect.send(JSON.stringify(({
-            type: 'NEW_MESSAGE',
-            message: messageData
-          })));
+
+          if (messageData.recipient) {
+            const parsed = JSON.parse(connectId);
+
+            if (parsed.id === messageData.recipient || parsed.id === messageData.user._id.toString()) {
+              connect.send(JSON.stringify(({
+                type: 'NEW_MESSAGE',
+                message: messageData
+              })));
+            }
+          } else {
+            connect.send(JSON.stringify(({
+              type: 'NEW_MESSAGE',
+              message: messageData
+            })));
+          }
         });
 
         break;
 
       case 'DELETE_MESSAGE':
         await Message.findByIdAndDelete(newMessage.messageId);
-        const updatedMessages = await Message.find().sort({datetime: -1}).limit(30).populate('user', 'username');
+        const updatedMessages = await Message
+          .find({$or: [{recipient: {$in: [null, user._id]}}, {user: user._id}]})
+          .sort({datetime: -1})
+          .limit(30)
+          .populate('user', 'username');
+
         const messages = updatedMessages.reverse();
         Object.keys(onlineConnections).forEach(connectId => {
           const connect = onlineConnections[connectId];
@@ -96,17 +119,16 @@ app.ws('/messages', async(ws, req) => {
           connect.send(JSON.stringify({
             type: 'UPDATE_MESSAGES',
             messages
-          }))
+          }));
         })
         break;
 
       default:
-        console.log('Unknown message type: ', newMessage.type)
+        console.log('Unknown message type: ', newMessage.type);
     }
-    ws.send(msg)
-  })
-  console.log(onlineConnections);
-})
+    ws.send(msg);
+  });
+});
 
 const run = async () => {
   await mongoose.connect(config.db.url, config.db.options);
