@@ -9,11 +9,14 @@ import {
     LOGOUT_USER_REQUEST,
     LOGOUT_USER_SUCCESS,
     LOGIN_USER_FAILURE,
-    LOGIN_USER_REQUEST
+    LOGIN_USER_REQUEST, GET_USERS_REQUEST, GET_USERS_SUCCESS, GET_USERS_FAILURE
 } from "../actions/usersActions";
 
 const initialState = {
     user: null,
+    users: [],
+    usersLoading: false,
+    usersError: null,
     registerLoading: false,
     registerError: null,
     loginLoading: false,
@@ -24,6 +27,13 @@ const initialState = {
 
 const usersReducer = (state = initialState, action) => {
     switch (action.type) {
+        case GET_USERS_REQUEST:
+            return {...state, usersLoading: true, usersError: null};
+        case GET_USERS_SUCCESS:
+            return {...state, usersLoading: false, users: action.payload};
+        case GET_USERS_FAILURE:
+            return {...state, usersLoading: false, usersError: action.payload};
+
         case REGISTER_USER_REQUEST:
             return {...state, registerLoading: true};
         case REGISTER_USER_SUCCESS:

@@ -2,6 +2,10 @@ import axiosApi from "../../axiosApi";
 import {historyPush} from "./historyActions";
 import {toast} from "react-toastify";
 
+export const GET_USERS_REQUEST = 'GET_USERS_REQUEST';
+export const GET_USERS_SUCCESS = 'GET_USERS_SUCCESS';
+export const GET_USERS_FAILURE = 'GET_USERS_FAILURE';
+
 export const REGISTER_USER_REQUEST = 'REGISTER_USER_REQUEST';
 export const REGISTER_USER_SUCCESS = 'REGISTER_USER_SUCCESS';
 export const REGISTER_USER_FAILURE = 'REGISTER_USER_FAILURE';
@@ -16,6 +20,10 @@ export const LOGOUT_USER_REQUEST = 'LOGOUT_USER_REQUEST';
 export const LOGOUT_USER_SUCCESS = 'LOGOUT_USER_SUCCESS';
 export const LOGOUT_USER_FAILURE = 'LOGOUT_USER_FAILURE';
 
+const getUsersRequest = () => ({type: GET_USERS_REQUEST});
+const getUsersSuccess = users => ({type: GET_USERS_SUCCESS, payload: users});
+const getUsersFailure = error => ({type: GET_USERS_FAILURE, payload: error});
+
 const registerUserRequest = () => ({type: REGISTER_USER_REQUEST});
 const registerUserSuccess = user => ({type: REGISTER_USER_SUCCESS, payload: user});
 const registerUserFailure = error => ({type: REGISTER_USER_FAILURE, payload: error});
@@ -29,6 +37,23 @@ export const clearLoginErrors = () => ({type: CLEAR_LOGIN_ERRORS});
 const logoutUserRequest = () => ({type: LOGOUT_USER_REQUEST});
 const logoutUserSuccess = () => ({type: LOGOUT_USER_SUCCESS});
 const logoutUserFailure = error => ({type: LOGOUT_USER_FAILURE, payload: error});
+
+export const getUsers = () => {
+  return async (dispatch, getState) => {
+    try {
+        dispatch(getUsersRequest());
+
+        const token = getState().users.user.token;
+        const headers = {'Authorization': token};
+
+        const {data} = await axiosApi('/users', {headers});
+
+        dispatch(getUsersSuccess(data));
+    }  catch (e) {
+        dispatch(getUsersFailure(e));
+    }
+  };
+};
 
 export const registerUser = userData => {
     return async dispatch => {
