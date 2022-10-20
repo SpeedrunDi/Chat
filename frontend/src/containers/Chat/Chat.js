@@ -39,7 +39,12 @@ const Chat = ({history}) => {
           }
 
           if(newMessage.type === 'UPDATED_USERS') {
-            setOnlineUsers(Object.keys(newMessage.onlineConnections).map(el => JSON.parse(el)));
+            const users = [];
+            newMessage.onlineUsers.forEach(user => {
+              users.push(JSON.parse(user));
+            });
+
+            setOnlineUsers(users);
           }
         };
 
@@ -57,7 +62,9 @@ const Chat = ({history}) => {
 
       connect();
      } else {
-       ws.current.close();
+       if (ws) {
+         ws.current.close();
+       }
      }
   }, [user]);
 

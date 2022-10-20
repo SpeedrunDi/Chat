@@ -48,6 +48,21 @@ app.ws('/messages', async(ws, req) => {
 
   onlineConnections[connectedUser] = ws;
 
+  const onlineUsers = [];
+
+  Object.keys(onlineConnections).forEach(connectId => {
+    onlineUsers.push(connectId);
+  });
+
+  Object.keys(onlineConnections).forEach(connectId => {
+    const connect = onlineConnections[connectId];
+
+    connect.send(JSON.stringify({
+      type: 'UPDATED_USERS',
+      onlineUsers
+    }));
+  });
+
   const lastMessages = await Message
     .find({$or: [{recipient: {$in: [null, user._id]}}, {user: user._id}]})
     .sort({datetime: -1}).limit(30)
@@ -62,26 +77,28 @@ app.ws('/messages', async(ws, req) => {
     }
   ));
 
-
-
-
   ws.on('close', () => {
     console.log('Client disconnected id = ', connectedUser);
     delete onlineConnections[connectedUser];
+
+    const onlineUsers = [];
+
+    Object.keys(onlineConnections).forEach(connectId => {
+      onlineUsers.push(connectId);
+    });
+
     Object.keys(onlineConnections).forEach(connectId => {
       const connect = onlineConnections[connectId];
 
       connect.send(JSON.stringify({
         type: 'UPDATED_USERS',
-        onlineConnections
+        onlineUsers
       }));
-    })
-
+    });
   });
 
   ws.on('message', async msg => {
     const newMessage = JSON.parse(msg);
-    console.log(newMessage)
 
     switch(newMessage.type) {
       case 'CREATE_MESSAGE':
