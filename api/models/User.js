@@ -11,7 +11,7 @@ const validateUnique = async value => {
 };
 
 const validatePassword = value => {
-  const pattern = /[\w]{6,30}/;
+  const pattern = /[\w]{4,30}/;
 
   if (!pattern.test(value)) return false;
 };
@@ -29,7 +29,7 @@ const UserSchema = new Schema({
         type: String,
         required: true,
         validate: [
-            {validator: validatePassword, message: 'Your password must be 6 characters'}
+            {validator: validatePassword, message: 'Your password must be 4 characters'}
         ]
     },
     token: {
@@ -55,7 +55,7 @@ UserSchema.pre('save', async function (next) {
 });
 
 UserSchema.set('toJSON', {
-    transform: (doc, ret, options) => {
+    transform: (doc, ret) => {
         delete ret.password;
         return ret;
     }

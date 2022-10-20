@@ -59,7 +59,7 @@ const Messages = ({messages, reconnect, deleteMessage, sendMessage}) => {
                     onOpen={onGetUsersForMessage}
                     onChange={e => setUserId(e.target.value)}
                   >
-                    {users.length !== 0 ?
+                    {users && users.length !== 0 ?
                       <MenuItem value="">
                         Cancel
                       </MenuItem>

@@ -107,6 +107,7 @@ export const logoutUser = () => {
             await axiosApi.delete('/users/sessions', {headers});
 
             dispatch(logoutUserSuccess());
+
             dispatch(historyPush('/login'));
         } catch (e) {
             dispatch(logoutUserFailure(e));

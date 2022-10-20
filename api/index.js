@@ -41,9 +41,11 @@ app.ws('/messages', async(ws, req) => {
     username: user.username,
     id: user._id,
     token
-  })
+  });
 
   console.log('Client connected ', connectedUser);
+
+
   onlineConnections[connectedUser] = ws;
 
   const lastMessages = await Message
@@ -53,19 +55,33 @@ app.ws('/messages', async(ws, req) => {
 
   const messages = lastMessages.reverse();
   ws.send(JSON.stringify({
-    type: 'CONNECTED',
-    user,
-    messages,
-    onlineConnections
-  }));
+      type: 'CONNECTED',
+      user,
+      messages,
+      onlineConnections,
+    }
+  ));
+
+
+
 
   ws.on('close', () => {
     console.log('Client disconnected id = ', connectedUser);
     delete onlineConnections[connectedUser];
+    Object.keys(onlineConnections).forEach(connectId => {
+      const connect = onlineConnections[connectId];
+
+      connect.send(JSON.stringify({
+        type: 'UPDATED_USERS',
+        onlineConnections
+      }));
+    })
+
   });
 
   ws.on('message', async msg => {
     const newMessage = JSON.parse(msg);
+    console.log(newMessage)
 
     switch(newMessage.type) {
       case 'CREATE_MESSAGE':
@@ -89,15 +105,15 @@ app.ws('/messages', async(ws, req) => {
             const parsed = JSON.parse(connectId);
 
             if (parsed.id === messageData.recipient || parsed.id === messageData.user._id.toString()) {
-              connect.send(JSON.stringify(({
+              connect.send(JSON.stringify({
                 type: 'NEW_MESSAGE',
-                message: messageData
-              })));
+                message
+              }));
             }
           } else {
             connect.send(JSON.stringify(({
               type: 'NEW_MESSAGE',
-              message: messageData
+              message
             })));
           }
         });
@@ -122,11 +138,9 @@ app.ws('/messages', async(ws, req) => {
           }));
         })
         break;
-
       default:
         console.log('Unknown message type: ', newMessage.type);
     }
-    ws.send(msg);
   });
 });
 

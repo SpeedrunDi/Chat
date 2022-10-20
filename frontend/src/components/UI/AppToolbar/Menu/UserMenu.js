@@ -5,10 +5,9 @@ import {logoutUser} from "../../../../store/actions/usersActions";
 import {Box, Typography} from "@mui/material";
 
 const UserMenu = ({user}) => {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-
-    return (
+  return (
       <Box sx={{display: 'flex'}}>
         <Typography variant='h6'>
           Welcome, {user.username}!

@@ -2,7 +2,8 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Grid} from "@mui/material";
 import Users from "../../components/Users/Users";
 import Messages from "../../components/Messages/Messages";
-import {useSelector} from "react-redux";
+import { useSelector} from "react-redux";
+
 
 const Chat = ({history}) => {
   const ws = useRef(null);
@@ -17,7 +18,7 @@ const Chat = ({history}) => {
   const [reconnect, setReconnect] = useState(false);
 
   useEffect(() => {
-    if (user) {
+     if (user) {
       const connect = () => {
         ws.current = new WebSocket('ws://localhost:8000/messages?token=' + user.token);
 
@@ -36,11 +37,16 @@ const Chat = ({history}) => {
           if(newMessage.type === 'NEW_MESSAGE') {
             setMessages(prev => [...prev, newMessage.message]);
           }
+
+          if(newMessage.type === 'UPDATED_USERS') {
+            setOnlineUsers(Object.keys(newMessage.onlineConnections).map(el => JSON.parse(el)));
+          }
         };
 
         ws.current.onclose = () => {
           console.log('disconnected');
           setReconnect(true);
+
 
           setTimeout(() => {
             connect();
@@ -50,8 +56,12 @@ const Chat = ({history}) => {
       };
 
       connect();
-    }
+     } else {
+       ws.current.close();
+     }
   }, [user]);
+
+
 
   const deleteMessage = id => {
     ws.current.send(JSON.stringify({
