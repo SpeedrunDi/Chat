@@ -29,7 +29,7 @@ const UserSchema = new Schema({
         type: String,
         required: true,
         validate: [
-            {validator: validatePassword, message: 'Your password is invalid'}
+            {validator: validatePassword, message: 'Your password must be 6 characters'}
         ]
     },
     token: {
