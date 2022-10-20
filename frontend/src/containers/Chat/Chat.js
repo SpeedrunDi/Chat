@@ -57,7 +57,10 @@ const Chat = ({history}) => {
 
       connect();
      } else {
-       ws.current.close();
+       if(!ws) {
+         ws.current.close();
+       }
+
      }
   }, [user]);
 

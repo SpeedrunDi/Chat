@@ -41,7 +41,7 @@ app.ws('/messages', async(ws, req) => {
     username: user.username,
     id: user._id,
     token
-  });
+  })
 
   console.log('Client connected ', connectedUser);
 
@@ -61,7 +61,6 @@ app.ws('/messages', async(ws, req) => {
       onlineConnections,
     }
   ));
-
 
 
 
