@@ -117,6 +117,7 @@ const Messages = ({messages, reconnect, deleteMessage, sendMessage}) => {
             <Button
               variant="contained"
               endIcon={<SendIcon/>}
+              disabled={!messageText}
               onClick={() => [sendMessage(messageText, userId), setMessageText(''), setUserId('')]}
             >
               Send

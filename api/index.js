@@ -109,6 +109,8 @@ app.ws('/messages', async(ws, req) => {
             datetime: new Date().toISOString()
           };
 
+
+
           if (newMessage.message.recipient) {
             messageData.recipient = newMessage.message.recipient;
           }
