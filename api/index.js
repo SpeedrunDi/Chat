@@ -80,65 +80,68 @@ app.ws('/messages', async(ws, req) => {
 
   ws.on('message', async msg => {
     const newMessage = JSON.parse(msg);
-    console.log(newMessage)
 
-    switch(newMessage.type) {
-      case 'CREATE_MESSAGE':
-        const messageData = {
-          text: newMessage.message.text,
-          user: user,
-          datetime: new Date().toISOString()
-        };
+    try {
+      switch (newMessage.type) {
+        case 'CREATE_MESSAGE':
+          const messageData = {
+            text: newMessage.message.text,
+            user: user,
+            datetime: new Date().toISOString()
+          };
 
-        if (newMessage.message.recipient) {
-          messageData.recipient = newMessage.message.recipient;
-        }
+          if (newMessage.message.recipient) {
+            messageData.recipient = newMessage.message.recipient;
+          }
 
-        const message = new Message(messageData);
-        await message.save();
+          const message = new Message(messageData);
+          await message.save();
 
-        Object.keys(onlineConnections).forEach(connectId => {
-          const connect = onlineConnections[connectId];
+          Object.keys(onlineConnections).forEach(connectId => {
+            const connect = onlineConnections[connectId];
 
-          if (messageData.recipient) {
-            const parsed = JSON.parse(connectId);
+            if (messageData.recipient) {
+              const parsed = JSON.parse(connectId);
 
-            if (parsed.id === messageData.recipient || parsed.id === messageData.user._id.toString()) {
-              connect.send(JSON.stringify({
+              if (parsed.id === messageData.recipient || parsed.id === messageData.user._id.toString()) {
+                connect.send(JSON.stringify({
+                  type: 'NEW_MESSAGE',
+                  message
+                }));
+              }
+            } else {
+              connect.send(JSON.stringify(({
                 type: 'NEW_MESSAGE',
                 message
-              }));
+              })));
             }
-          } else {
-            connect.send(JSON.stringify(({
-              type: 'NEW_MESSAGE',
-              message
-            })));
-          }
-        });
+          });
 
-        break;
+          break;
 
-      case 'DELETE_MESSAGE':
-        await Message.findByIdAndDelete(newMessage.messageId);
-        const updatedMessages = await Message
-          .find({$or: [{recipient: {$in: [null, user._id]}}, {user: user._id}]})
-          .sort({datetime: -1})
-          .limit(30)
-          .populate('user', 'username');
+        case 'DELETE_MESSAGE':
+          await Message.findByIdAndDelete(newMessage.messageId);
+          const updatedMessages = await Message
+              .find({$or: [{recipient: {$in: [null, user._id]}}, {user: user._id}]})
+              .sort({datetime: -1})
+              .limit(30)
+              .populate('user', 'username');
 
-        const messages = updatedMessages.reverse();
-        Object.keys(onlineConnections).forEach(connectId => {
-          const connect = onlineConnections[connectId];
+          const messages = updatedMessages.reverse();
+          Object.keys(onlineConnections).forEach(connectId => {
+            const connect = onlineConnections[connectId];
 
-          connect.send(JSON.stringify({
-            type: 'UPDATE_MESSAGES',
-            messages
-          }));
-        })
-        break;
-      default:
-        console.log('Unknown message type: ', newMessage.type);
+            connect.send(JSON.stringify({
+              type: 'UPDATE_MESSAGES',
+              messages
+            }));
+          })
+          break;
+        default:
+          console.log('Unknown message type: ', newMessage.type);
+      }
+    } catch (e) {
+      console.error(e);
     }
   });
 });

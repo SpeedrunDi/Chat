@@ -75,6 +75,10 @@ const Chat = ({history}) => {
   };
 
   const sendMessage = (text, userId) => {
+    if (text === '') {
+      console.log('Field must not be empty');
+    }
+
     ws.current.send(JSON.stringify({
       type: 'CREATE_MESSAGE',
       message: {

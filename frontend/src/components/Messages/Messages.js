@@ -112,6 +112,7 @@ const Messages = ({messages, reconnect, deleteMessage, sendMessage}) => {
                 value={messageText}
                 name='message'
                 onChange={e => setMessageText(e.target.value)}
+                required
             />
             <Button
               variant="contained"
